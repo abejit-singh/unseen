@@ -27,7 +27,12 @@
 <meta property="og:title" content="UNSEEN — How much of the world is still waiting for you?">
 <meta property="og:description" content="An interactive map of everywhere you've been, and everywhere you haven't.">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta property="og:url" content="https://abejit-singh.github.io/unseen/">
+<meta property="og:image" content="https://abejit-singh.github.io/unseen/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://abejit-singh.github.io/unseen/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="UNSEEN — How much of the world is still waiting for you?">
 <meta name="twitter:description" content="An interactive map of everywhere you've been, and everywhere you haven't.">
 <link rel="icon" type="image/png" href="favicon-32.png">
@@ -39,7 +44,7 @@
 <meta name="apple-mobile-web-app-title" content="UNSEEN">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <!--
   Map libraries, pinned to exact versions so a future release can never
   change behaviour underneath the app. Loaded synchronously (no async/defer)
@@ -88,6 +93,18 @@
     --overlay:#000000;
     --red:#FF7A66;
     --grad:linear-gradient(100deg,var(--secondary) 10%,var(--wishlist) 90%);
+    /* Paper things — postcards and the boarding pass — and the inks printed on them. */
+    --paper:#F1EBDD;
+    --paper-hi:#FBF8F1;
+    --paper-line:rgba(27,36,34,0.18);
+    --ink:#1B2422;
+    --ink-dim:rgba(27,36,34,0.6);
+    --ink-pen:#21508F;          /* handwriting: blue ballpoint */
+    --ink-gold:#A8731A;         /* gold that stays readable on paper */
+    --postmark:rgba(27,36,34,0.55);
+    /* Rubber-stamp texture: speckled noise used as a mask, so inks print unevenly. */
+    --ink-noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='i'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 2.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23i)'/%3E%3C/svg%3E");
+    --font-hand:'Caveat','Segoe Print','Bradley Hand',cursive;
     --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     --font-display:'Space Grotesk',var(--font-sans);
     --font-mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
@@ -166,10 +183,33 @@
   .reset-btn:hover{border-color:var(--red);color:var(--red);transform:rotate(-70deg);}
 
   /* ============================= HERO & STATS ============================= */
-  .hero{padding-top:clamp(2.8rem,8vh,5rem);text-align:center;}
-  .hero-tagline{font-size:clamp(2.1rem,5.6vw,4rem);font-weight:700;letter-spacing:-.035em;line-height:1.02;max-width:880px;margin:0 auto;text-wrap:balance;}
+  .hero{padding-top:clamp(1.6rem,5vh,3.2rem);}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:1.5rem clamp(2rem,5vw,4rem);align-items:center;}
+  .hero-text{max-width:620px;}
+  .hero-tagline{font-size:clamp(2.2rem,5.2vw,4.1rem);font-weight:700;letter-spacing:-.035em;line-height:1.02;text-wrap:balance;}
   .hero-tagline .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  .hero-sub{color:var(--text-dim);max-width:54ch;margin:1.1rem auto 0;font-size:1.02rem;}
+  .hero-sub{color:var(--text-dim);max-width:46ch;margin-top:1.15rem;font-size:1.04rem;}
+  .hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:1rem 1.6rem;margin-top:1.9rem;}
+  .hero-actions .btn{text-decoration:none;}
+  .hero-legend{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem .5rem;font-size:.76rem;color:var(--text-dim);}
+  .hero-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-left:.45rem;}
+  .hero-legend i:first-child{margin-left:0;}
+  .hero-legend .v{background:var(--visited);}
+  .hero-legend .w{background:var(--wishlist);}
+  .hero-legend .j{width:16px;height:0;border-radius:0;border-top:2px dashed var(--wishlist);}
+  /* The globe (see initGlobe). The dark disc behind it shows while the world data loads. */
+  .globe-wrap{position:relative;width:100%;max-width:540px;justify-self:center;animation:globeIn 1.4s var(--ease) both;}
+  @keyframes globeIn{from{opacity:0;transform:scale(.94);}}
+  .globe{display:block;width:100%;aspect-ratio:1;touch-action:pan-y;cursor:grab;background:radial-gradient(circle,var(--ocean-lo) 0 43%,transparent 43.3%);}
+  .globe:active{cursor:grabbing;}
+  .globe-hint{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.62rem;letter-spacing:.06em;color:var(--text-dimmer);white-space:nowrap;pointer-events:none;}
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:minmax(0,1fr);text-align:center;}
+    .hero-text{margin:0 auto;}
+    .hero-sub{margin-left:auto;margin-right:auto;}
+    .hero-actions{justify-content:center;}
+    .globe-wrap{max-width:min(420px,92vw);}
+  }
   .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin:1.6rem auto;max-width:820px;}
   .stat{background:var(--card);padding:1.25rem 1rem;text-align:center;}
   .stat .num{font-family:var(--font-mono);font-size:1.8rem;font-weight:700;color:var(--secondary);font-variant-numeric:tabular-nums;}
@@ -291,17 +331,32 @@
   .continent-row .frac{grid-area:frac;font-family:var(--font-mono);font-size:.76rem;text-align:right;color:var(--text-dim);}
 
   /* ============================= MEMORIES ============================= */
-  .memory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.1rem;}
-  .memory-card{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.4rem;transition:transform .3s var(--ease),border-color .3s;}
-  .memory-card:hover{transform:translateY(-3px);border-color:rgba(79,184,204,0.35);}
-  /* The country's flag, huge and faint, in the corner of its card. */
-  .memory-card::after{content:attr(data-flag);position:absolute;right:-.5rem;bottom:-1.7rem;font-size:7rem;line-height:1;opacity:.09;filter:grayscale(1);pointer-events:none;}
-  .memory-card > *{position:relative;z-index:1;}
-  .memory-card img{width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:.9rem;display:block;}
-  .memory-card h3{font-size:1.2rem;margin-bottom:.25rem;}
-  .memory-meta{font-family:var(--font-mono);font-size:.74rem;color:var(--text-dim);margin-bottom:.6rem;}
-  .memory-stars{color:var(--wishlist);letter-spacing:.05em;margin-bottom:.6rem;}
-  .memory-quote{font-style:italic;color:var(--text-dim);font-size:.92rem;overflow-wrap:anywhere;padding-left:.8rem;border-left:2px solid var(--primary);}
+  .memory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:1.8rem 1.5rem;padding:.4rem .2rem;}
+  /* Postcards: paper on the dark page, each tilted a little as if dropped on a table. */
+  .postcard{--tilt:-1.2deg;position:relative;background:var(--paper);color:var(--ink);border-radius:5px;padding:1rem 1rem 1.1rem;transform:rotate(var(--tilt));box-shadow:0 26px 50px -24px rgba(0,0,0,0.95),inset 0 0 0 1px rgba(255,255,255,0.5);transition:transform .45s var(--ease),box-shadow .45s var(--ease);}
+  .postcard:nth-child(2n){--tilt:1deg;}
+  .postcard:nth-child(3n){--tilt:-.4deg;}
+  .postcard:hover{transform:rotate(0deg) translateY(-6px) scale(1.01);box-shadow:0 40px 70px -26px rgba(0,0,0,0.95),inset 0 0 0 1px rgba(255,255,255,0.5);}
+  .postcard img{width:100%;height:170px;object-fit:cover;border-radius:3px;margin-bottom:.9rem;display:block;box-shadow:0 0 0 1px var(--paper-line);}
+  .pc-body{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:.9rem;}
+  .pc-text{min-width:0;padding-right:.9rem;border-right:1px solid var(--paper-line);}
+  .postcard h3{font-size:1.2rem;color:var(--ink);margin-bottom:.3rem;}
+  .postcard .memory-meta{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);margin-bottom:.55rem;}
+  .postcard .memory-stars{color:var(--ink-gold);letter-spacing:.05em;margin-bottom:.4rem;}
+  .postcard .memory-quote{font-family:var(--font-hand);font-size:1.45rem;line-height:1.15;color:var(--ink-pen);overflow-wrap:anywhere;transform:rotate(-1deg);}
+  .pc-side{display:flex;flex-direction:column;align-items:flex-end;}
+  /* The stamp: perforated edges from a dot pattern masked out of the padding, a solid interior. */
+  .pc-stamp{width:66px;height:78px;padding:6px;background:var(--paper-hi);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 0 0 7px var(--paper-hi),inset 0 0 0 8px var(--paper-line);
+    -webkit-mask:radial-gradient(circle at 4px 4px,transparent 2.4px,#000 2.8px) -4px -4px/8px 8px,linear-gradient(#000 0 0) content-box;mask:radial-gradient(circle at 4px 4px,transparent 2.4px,#000 2.8px) -4px -4px/8px 8px,linear-gradient(#000 0 0) content-box;}
+  .pc-stamp span{font-size:1.9rem;line-height:1;}
+  .pc-stamp small{font-family:var(--font-mono);font-size:.55rem;font-weight:700;letter-spacing:.12em;color:var(--ink-dim);}
+  /* The postmark: a ring of ink over the stamp's corner, with cancellation bars beside it. */
+  .pc-postmark{position:relative;width:76px;height:76px;margin:-1.6rem 1.9rem 0 0;border:2px solid var(--postmark);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--postmark);font-family:var(--font-mono);text-align:center;transform:rotate(-14deg);-webkit-mask-image:var(--ink-noise);mask-image:var(--ink-noise);}
+  .pc-postmark span{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.5rem;letter-spacing:.06em;}
+  .pc-postmark b{font-size:.62rem;font-weight:700;letter-spacing:.04em;}
+  .pc-postmark::after{content:'';position:absolute;left:68px;top:22px;width:52px;height:28px;background:repeating-linear-gradient(transparent 0 4px,var(--postmark) 4px 6px);}
+  .pc-lines{width:100%;margin-top:auto;}
+  .pc-lines i{display:block;height:1px;margin-top:.8rem;background:var(--paper-line);}
 
   /* ============================= TIMELINE ============================= */
   /* Years on the left, a glowing line, the countries of that year on the right. */
@@ -310,9 +365,29 @@
   .timeline-year{position:relative;display:grid;grid-template-columns:80px minmax(0,1fr);gap:0 2.3rem;align-items:start;padding:.85rem 0;}
   .timeline-year::before{content:'';position:absolute;left:91px;top:1.3rem;width:12px;height:12px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px var(--bg),0 0 14px var(--primary-glow);}
   .timeline-year .yr{font-family:var(--font-display);font-size:1.35rem;font-weight:700;color:var(--secondary);text-align:right;line-height:1.5;}
-  .timeline-chips{display:flex;flex-wrap:wrap;gap:.5rem;}
-  .timeline-chip{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:.42rem .85rem;font-size:.85rem;transition:border-color .2s;}
-  .timeline-chip:hover{border-color:var(--primary);}
+  /* The passport page: fine guilloche rings, like the security print on real passports. */
+  .passport{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:22px;padding:1.3rem clamp(1rem,3vw,2rem) 1.5rem;
+    background:repeating-radial-gradient(circle at 100% 0%,transparent 0 13px,rgba(79,184,204,0.05) 13px 14px),repeating-radial-gradient(circle at 0% 100%,transparent 0 17px,rgba(214,154,58,0.04) 17px 18px),linear-gradient(160deg,var(--card-hi),var(--card));}
+  .passport-head{display:flex;justify-content:space-between;gap:1rem;padding-bottom:.9rem;margin-bottom:.4rem;border-bottom:1px dashed var(--border-strong);font-family:var(--font-mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dimmer);}
+  .passport-head b{color:var(--secondary);}
+  /* On the passport page the years flow side by side (still in date order) instead of down a line. */
+  .passport .timeline{display:flex;flex-wrap:wrap;align-items:flex-start;gap:1.8rem 2.4rem;padding-top:.8rem;}
+  .passport .timeline::before,.passport .timeline-year::before{display:none;}
+  .passport .timeline-year{display:flex;flex-direction:column;gap:.7rem;padding:0;}
+  .passport .timeline-year .yr{display:flex;align-items:center;gap:.6rem;text-align:left;font-family:var(--font-mono);font-size:.72rem;font-weight:500;letter-spacing:.22em;color:var(--text-dimmer);line-height:1;}
+  .passport .timeline-year .yr::after{content:'';width:28px;height:1px;background:var(--border-strong);}
+  .timeline-chips{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.3rem;padding:.2rem 0 .4rem;}
+  /* Rubber stamps: double ink border, uneven ink (noise mask), each one tilted its own way. */
+  .stamp{--ink-c:var(--secondary);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;padding:.55rem 1rem;color:var(--ink-c);border:2px solid var(--ink-c);box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4.5px var(--ink-c);font-family:var(--font-mono);text-align:center;transform:rotate(var(--tilt,0deg));-webkit-mask-image:var(--ink-noise);mask-image:var(--ink-noise);transition:transform .3s var(--ease);}
+  .stamp:hover{transform:rotate(0deg) scale(1.06);}
+  .stamp b{font-family:var(--font-display);font-size:.92rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;line-height:1.1;}
+  .stamp small{font-size:.54rem;letter-spacing:.14em;}
+  .stamp.rect{border-radius:5px;}
+  .stamp.oval{border-radius:50% / 44%;padding:.75rem 1.5rem;}
+  .stamp.round{border-radius:50%;width:118px;height:118px;padding:.6rem;}
+  .stamp.round b{font-size:.8rem;}
+  .stamp.ink-gold{--ink-c:var(--wishlist);}
+  .stamp.ink-red{--ink-c:var(--red);}
   @media (max-width:560px){
     .timeline::before{left:5px;}
     .timeline-year{grid-template-columns:minmax(0,1fr);padding-left:1.9rem;}
@@ -376,17 +451,48 @@
   .unseen-section .quote{font-style:italic;color:rgba(255,255,255,0.8);margin:1.3rem auto 1.8rem;font-size:1.1rem;}
 
   /* ============================= SURPRISE ============================= */
-  .surprise-card{
-    background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(160deg,rgba(79,184,204,0.65),rgba(214,154,58,0.55)) border-box;
-    border:1px solid transparent;border-radius:26px;padding:2.2rem 2rem;text-align:center;max-width:380px;margin:1.6rem auto 0;
-    box-shadow:0 30px 80px -40px var(--primary-glow);animation:cardIn .5s var(--ease);
-  }
-  @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98);}to{opacity:1;transform:none;}}
-  .surprise-card .flag{font-size:4rem;line-height:1.1;}
-  .surprise-card .name{font-size:1.9rem;margin:.5rem 0 .35rem;}
-  .surprise-card .tag{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;color:var(--text-dim);margin-bottom:.8rem;}
-  .surprise-card .quip{color:var(--text-dim);font-style:italic;margin-bottom:1.3rem;}
+  /* The surprise pick, printed as a boarding pass: a main part and a tear-off stub,
+     with semicircle notches cut where they meet (radial-gradient masks). */
+  .boarding-pass{display:grid;grid-template-columns:minmax(0,1fr) 128px;max-width:640px;margin:1.8rem auto 0;text-align:left;filter:drop-shadow(0 30px 40px rgba(0,0,0,0.6));animation:passIn .7s var(--ease);}
+  @keyframes passIn{from{opacity:0;transform:translateY(24px) rotate(-2deg);}to{opacity:1;transform:none;}}
+  .bp-main,.bp-stub{background:var(--paper);color:var(--ink);}
+  .bp-main{min-width:0;padding:1.3rem 1.6rem 1.4rem;border-radius:16px 0 0 16px;
+    -webkit-mask:radial-gradient(circle 11px at 100% 0,transparent 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at 100% 100%,transparent 98%,#000) bottom/100% 51% no-repeat;
+    mask:radial-gradient(circle 11px at 100% 0,transparent 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at 100% 100%,transparent 98%,#000) bottom/100% 51% no-repeat;}
+  .bp-stub{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:1rem;padding:1.3rem .9rem;border-radius:0 16px 16px 0;border-left:2px dashed var(--paper-line);
+    -webkit-mask:radial-gradient(circle 11px at 0 0,transparent 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at 0 100%,transparent 98%,#000) bottom/100% 51% no-repeat;
+    mask:radial-gradient(circle 11px at 0 0,transparent 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at 0 100%,transparent 98%,#000) bottom/100% 51% no-repeat;}
+  .bp-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-bottom:.85rem;border-bottom:1px dashed var(--paper-line);font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);}
+  .bp-brand{font-family:var(--font-display);font-size:.98rem;font-weight:700;letter-spacing:.02em;color:var(--ink);}
+  .bp-brand b{color:var(--primary);}
+  .bp-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:.8rem;margin:1.1rem 0 1rem;}
+  .bp-city small,.bp-meta small{display:block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);}
+  .bp-city b{display:block;margin:.15rem 0 .2rem;font-family:var(--font-display);font-size:clamp(2rem,6vw,2.7rem);font-weight:700;line-height:1;letter-spacing:-.01em;color:var(--ink);}
+  .bp-city span,.bp-city .name{display:block;font-family:var(--font-sans);font-size:.84rem;font-weight:500;letter-spacing:0;line-height:1.3;color:var(--ink-dim);}
+  .bp-city.to{text-align:right;}
+  .bp-path{display:flex;align-items:center;gap:.35rem;color:var(--primary);}
+  .bp-path i{width:clamp(14px,4vw,34px);border-top:2px dotted var(--paper-line);}
+  .bp-path span{font-size:1.25rem;}
+  .bp-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;padding:.85rem 0;border-top:1px dashed var(--paper-line);border-bottom:1px dashed var(--paper-line);}
+  .bp-meta span{font-family:var(--font-mono);font-size:.8rem;font-weight:600;color:var(--ink);}
+  .boarding-pass .quip{margin:.9rem 0 1rem;font-family:var(--font-hand);font-size:1.4rem;line-height:1.15;color:var(--ink-pen);}
+  .boarding-pass .surprise-actions{justify-content:flex-start;}
+  .bp-stub .flag{font-size:2.6rem;line-height:1;}
+  .bp-gate{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);text-align:center;}
+  .bp-gate b{display:block;font-family:var(--font-display);font-size:1.6rem;letter-spacing:0;color:var(--ink);}
+  .bp-barcode{width:100%;height:64px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,var(--ink) 8px 11px,transparent 11px 13px);}
   .surprise-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+  @media (max-width:560px){
+    .boarding-pass{grid-template-columns:minmax(0,1fr);}
+    .bp-main{padding:1.2rem 1.2rem 1.3rem;border-radius:16px 16px 0 0;
+      -webkit-mask:radial-gradient(circle 11px at 0 100%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 100%,transparent 98%,#000) right/51% 100% no-repeat;
+      mask:radial-gradient(circle 11px at 0 100%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 100%,transparent 98%,#000) right/51% 100% no-repeat;}
+    .bp-stub{flex-direction:row;padding:1rem 1.2rem;border-radius:0 0 16px 16px;border-left:none;border-top:2px dashed var(--paper-line);
+      -webkit-mask:radial-gradient(circle 11px at 0 0,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 0,transparent 98%,#000) right/51% 100% no-repeat;
+      mask:radial-gradient(circle 11px at 0 0,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 0,transparent 98%,#000) right/51% 100% no-repeat;}
+    .bp-barcode{width:110px;height:42px;}
+    .bp-meta{grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
 
   footer{text-align:center;padding:3rem 1.5rem calc(4rem + env(safe-area-inset-bottom));color:var(--text-dimmer);font-size:.76rem;font-family:var(--font-mono);max-width:820px;margin:2rem auto 0;border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:.5rem;line-height:1.6;}
   .footer-mark{font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:-.02em;color:var(--text);margin-bottom:.35rem;}
@@ -431,9 +537,22 @@
 <main class="wrap">
 
   <section class="hero">
-    <span class="eyebrow">Your world, mapped</span>
-    <h1 class="hero-tagline">How much of the world is <span class="hl">still waiting</span> for you?</h1>
-    <p class="hero-sub">Mark where you've been and where you dream of going. Keep the memories. See what's still unseen.</p>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Your world, mapped</span>
+        <h1 class="hero-tagline">How much of the world is <span class="hl">still waiting</span> for you?</h1>
+        <p class="hero-sub">Mark where you've been and where you dream of going. Keep the memories. See what's still unseen.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#mapSection">Open the map <span aria-hidden="true">↓</span></a>
+          <span class="hero-legend" aria-hidden="true"><i class="v"></i>Visited <i class="w"></i>Wishlist <i class="j"></i>Your journey</span>
+        </div>
+      </div>
+      <!-- The globe: the same countries as the map, on a canvas you can spin (see initGlobe). -->
+      <div class="globe-wrap">
+        <canvas class="globe" id="globe" role="img" aria-label="A globe showing the countries you have visited and the ones on your wishlist. Drag it to turn it, or click a country to open it. The search field below the globe reaches every country with the keyboard."></canvas>
+        <div class="globe-hint" aria-hidden="true">Drag to spin · click a country</div>
+      </div>
+    </div>
   </section>
 
   <!-- ======================= MAP ======================= -->
@@ -488,7 +607,12 @@
   <section class="section reveal" id="timelineSection">
     <span class="eyebrow">Travel timeline</span>
     <h2>Your journey, in order.</h2>
-    <div class="timeline" id="timelineList"></div>
+    <p class="lede">Every first visit, stamped into your passport.</p>
+    <!-- A passport page: one stamp per country, grouped by the year of the first visit. -->
+    <div class="passport">
+      <div class="passport-head" aria-hidden="true"><span>Passport · Visas</span><span>UNSEEN<b>.</b></span></div>
+      <div class="timeline" id="timelineList"></div>
+    </div>
   </section>
 
   <!-- ======================= WHAT'S NEXT ======================= -->
@@ -860,6 +984,30 @@ function formatMonthYear(iso){
   return d.toLocaleDateString('en-US', { month:'long', year:'numeric' });
 }
 
+/** "AUG 2015", for postmarks. Parts are read directly (see formatMonthYear for why). */
+function shortMonthYear(iso){
+  var parts = iso.split('-');
+  return new Date(+parts[0], +parts[1] - 1, 1).toLocaleDateString('en-US', { month:'short', year:'numeric' }).toUpperCase();
+}
+
+/** "02 MAY 2019", for passport stamps. */
+function stampDate(iso){
+  var parts = iso.split('-');
+  return parts[2] + ' ' + new Date(+parts[0], +parts[1] - 1, 1).toLocaleDateString('en-US', { month:'short' }).toUpperCase() + ' ' + parts[0];
+}
+
+/**
+ * A small, stable number from a string (djb2). Used to give each passport
+ * stamp its own shape, ink and tilt that stay the same on every visit.
+ * @param {string} s
+ * @returns {number} an unsigned 32-bit integer
+ */
+function hashString(s){
+  var h = 5381;
+  for(var i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
 /** Today's date as 'YYYY-MM-DD' in the user's own time zone (the latest valid visit date). */
 function todayIso(){
   var d = new Date();
@@ -1020,6 +1168,9 @@ function renderMemories(){
     grid.innerHTML = '<p class="empty-state">No memories yet. Mark a country as visited and add a note to see it here.</p>';
     return;
   }
+  // Each memory is a postcard: the photo on the front, the note handwritten
+  // on the back, a stamp with the country's flag and a postmark with the
+  // first city and the month of the first visit.
   grid.innerHTML = items.map(function(p){
     var c = state.countries[p.key];
     var full = c.rating ? Math.round(c.rating / 2) : 0;   // 1–10 rating shown as 0–5 stars
@@ -1028,12 +1179,22 @@ function renderMemories(){
       c.firstVisited ? formatMonthYear(c.firstVisited) : '',
       c.trips > 1 ? c.trips + ' trips' : ''
     ].filter(Boolean).join(' · ');
-    return '<article class="memory-card" data-flag="' + flagEmoji(p.iso2) + '">' +
+    var town = (c.cities && c.cities[0]) || p.label;
+    return '<article class="memory-card postcard">' +
       (c.photo ? '<img src="' + escapeHtml(c.photo) + '" alt="Photo from ' + escapeHtml(p.label) + '" loading="lazy">' : '') +
-      '<h3>' + placeTitle(p) + '</h3>' +
-      (meta ? '<div class="memory-meta">' + escapeHtml(meta) + '</div>' : '') +
-      (c.rating ? '<div class="memory-stars" aria-label="Rated ' + c.rating + ' out of 10">' + '★'.repeat(full) + '☆'.repeat(5 - full) + ' <span style="font-family:var(--font-mono);font-size:.75rem">' + c.rating + '/10</span></div>' : '') +
-      (c.memory ? '<p class="memory-quote">“' + escapeHtml(c.memory) + '”</p>' : '') +
+      '<div class="pc-body">' +
+        '<div class="pc-text">' +
+          '<h3>' + placeTitle(p) + '</h3>' +
+          (meta ? '<div class="memory-meta">' + escapeHtml(meta) + '</div>' : '') +
+          (c.rating ? '<div class="memory-stars" aria-label="Rated ' + c.rating + ' out of 10">' + '★'.repeat(full) + '☆'.repeat(5 - full) + ' <span style="font-family:var(--font-mono);font-size:.75rem">' + c.rating + '/10</span></div>' : '') +
+          (c.memory ? '<p class="memory-quote">' + escapeHtml(c.memory) + '</p>' : '') +
+        '</div>' +
+        '<div class="pc-side" aria-hidden="true">' +
+          '<div class="pc-stamp"><span>' + flagEmoji(p.iso2) + '</span><small>' + escapeHtml(p.iso2 || '··') + '</small></div>' +
+          '<div class="pc-postmark"><span>' + escapeHtml(town.toUpperCase()) + '</span><b>' + (c.firstVisited ? shortMonthYear(c.firstVisited) : '· · ·') + '</b></div>' +
+          '<div class="pc-lines"><i></i><i></i><i></i></div>' +
+        '</div>' +
+      '</div>' +
       '</article>';
   }).join('');
 }
@@ -1055,9 +1216,27 @@ function renderTimeline(){
   });
   list.innerHTML = years.map(function(y){
     return '<div class="timeline-year"><div class="yr">' + y + '</div><div class="timeline-chips">' +
-      byYear[y].map(function(p){ return '<span class="timeline-chip">' + placeTitle(p) + '</span>'; }).join('') +
+      byYear[y].map(stampHtml).join('') +
       '</div></div>';
   }).join('');
+}
+
+/**
+ * A passport stamp for one first visit: date on top, country in the middle,
+ * continent below. Shape, ink colour and tilt are picked from the place's
+ * name with hashString, so a stamp looks the same every time it is drawn.
+ * @param {Place} p - a visited place with a firstVisited date
+ * @returns {string} HTML
+ */
+function stampHtml(p){
+  var h = hashString(p.key);
+  var shape = ['round', 'rect', 'oval'][h % 3];
+  var ink = ['teal', 'gold', 'red'][Math.floor(h / 3) % 3];
+  var tilt = Math.floor(h / 9) % 13 - 6;            // -6° … +6°
+  return '<span class="timeline-chip stamp ' + shape + ' ink-' + ink + '" style="--tilt:' + tilt + 'deg">' +
+    '<small>' + stampDate(state.countries[p.key].firstVisited) + '</small>' +
+    '<b>' + placeTitle(p) + '</b>' +
+    '<small>' + CONTINENT_LABELS[p.continent].toUpperCase() + '</small></span>';
 }
 
 /** World Score: countries (main number), continents, and "experiences". */
@@ -1089,6 +1268,7 @@ function renderAll(){
   renderMemories();
   renderTimeline();
   renderScore();
+  if(globe) globe.redraw();
 }
 
 /* ============================================================================
@@ -1247,6 +1427,7 @@ function buildMap(fc){
   addMapChrome(container);
   bindMapPointer(svg);
   applyContinentFilter(false);
+  safeCall(function(){ initGlobe(shapes); }, 'globe');
 }
 
 /**
@@ -1445,6 +1626,274 @@ function animateFill(key){
     requestAnimationFrame(function(){ el.style.transition = ''; });
   }
   requestAnimationFrame(tick);
+}
+
+/* ============================================================================
+   THE GLOBE (hero)
+   ============================================================================ */
+
+var globe = null;       // set by initGlobe once the world data is in: { redraw }
+
+/** Reads a colour token from the stylesheet, so the canvas uses the same palette as the page. */
+function cssColor(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+/**
+ * '#4FB8CC' and 0.3 → 'rgba(79,184,204,0.3)'. Canvas gradients need colours
+ * with an explicit alpha; deriving them from the tokens keeps one palette.
+ * @param {string} hex - '#rrggbb'
+ * @param {number} a - alpha, 0–1
+ * @returns {string}
+ */
+function withAlpha(hex, a){
+  var n = parseInt(hex.replace('#', ''), 16);
+  return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+
+/**
+ * The globe in the hero: the same country shapes as the map, drawn on a
+ * canvas in an orthographic projection (the Earth as seen from space).
+ *  - It turns slowly by itself and can be dragged to spin, with a little
+ *    inertia when let go. Hovering pauses it, so a country is easy to click.
+ *  - Clicking a country, or one of the island-nation dots, opens the same
+ *    panel as the map.
+ *  - Colours are read from `state` on every frame, so a change made anywhere
+ *    on the page shows up on the globe straight away.
+ *  - The places with a "first visited" date are joined in that order by
+ *    great-circle arcs, with a small light travelling along them: the
+ *    journey so far.
+ * It is drawn only while it is on screen. With reduced motion it does not
+ * turn by itself and is redrawn only when something changes.
+ * @param {object[]} shapes - country features from buildMap, each with __key
+ */
+function initGlobe(shapes){
+  var canvas = $('globe');
+  if(!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var projection = d3.geoOrthographic().clipAngle(90).precision(0.6);
+  var path = d3.geoPath(projection, ctx);
+  var sphere = { type:'Sphere' }, graticule = d3.geoGraticule10();
+  // Island nations are drawn as dots; enclaves (San Marino, Vatican City…) are
+  // left to the map, where zooming in makes them easy to tell apart.
+  var islands = PLACES.filter(function(p){
+    return p.lonLat && !shapes.some(function(f){ return d3.geoContains(f, p.lonLat); });
+  });
+  var col = {
+    visited:cssColor('--visited'), wishlist:cssColor('--wishlist'), unseen:cssColor('--unvisited'),
+    glow:cssColor('--secondary'), oceanHi:cssColor('--ocean-hi'), oceanLo:cssColor('--ocean-lo'),
+    grid:cssColor('--graticule'), text:cssColor('--text'), bg:cssColor('--bg')
+  };
+  var rot = [-12, -22];        // longitude and latitude turned towards the viewer (Europe and Africa, tilted)
+  var spin = 0;                // inertia after a drag, in degrees per frame
+  var size = 0, drag = null, hoverKey = null, hovering = false;
+  var onScreen = true, rafId = null, lastTime = 0;
+  var still = prefersReducedMotion();
+
+  /** Matches the canvas resolution to its size on screen, so it stays sharp on high-density displays. */
+  function resize(){
+    var w = canvas.clientWidth;
+    if(!w) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    size = w;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(w * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    projection.translate([w / 2, w / 2]).scale(w / 2 / 1.16);     // leaves room for the halo (1.14 × the radius) inside the canvas
+    draw(performance.now());
+  }
+
+  /** The visited places that have a date, oldest first (the last twelve): the stops of the journey. */
+  function journeyStops(){
+    return visitedPlaces().filter(function(p){ return state.countries[p.key].firstVisited && geo[p.key]; })
+      .sort(function(a, b){ return state.countries[a.key].firstVisited.localeCompare(state.countries[b.key].firstVisited); })
+      .slice(-12)
+      .map(function(p){ return geo[p.key].centroid; });
+  }
+
+  /** True if a [lon, lat] point is on the side of the globe facing the viewer. */
+  function facing(lonLat){ return d3.geoDistance(lonLat, [-rot[0], -rot[1]]) < Math.PI / 2 - 0.02; }
+
+  /** Paints one frame. `now` (ms) drives the light travelling along the journey. */
+  function draw(now){
+    if(!size) return;
+    var c = size / 2, r = projection.scale();
+    projection.rotate(rot);
+    ctx.clearRect(0, 0, size, size);
+
+    // Atmosphere: a soft halo just outside the edge of the Earth.
+    var halo = ctx.createRadialGradient(c, c, r * 0.92, c, c, r * 1.14);
+    halo.addColorStop(0, withAlpha(col.glow, 0.32));
+    halo.addColorStop(1, withAlpha(col.glow, 0));
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(c, c, r * 1.14, 0, 2 * Math.PI); ctx.fill();
+
+    // Ocean, lit from the upper left, and the grid of meridians and parallels.
+    var sea = ctx.createRadialGradient(c - r * 0.4, c - r * 0.45, r * 0.05, c, c, r);
+    sea.addColorStop(0, col.oceanHi);
+    sea.addColorStop(1, col.oceanLo);
+    ctx.fillStyle = sea;
+    ctx.beginPath(); path(sphere); ctx.fill();
+    ctx.beginPath(); path(graticule);
+    ctx.strokeStyle = col.grid; ctx.lineWidth = 0.6; ctx.stroke();
+
+    // Countries: one path per status, filled once (far faster than a fill per country).
+    var groups = { unseen:[], wishlist:[], visited:[] };
+    shapes.forEach(function(f){ groups[getStatus(f.__key) || 'unseen'].push(f); });
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = withAlpha(col.text, 0.14);
+    ['unseen', 'wishlist', 'visited'].forEach(function(status){
+      ctx.beginPath();
+      groups[status].forEach(function(f){ path(f); });
+      ctx.fillStyle = col[status];
+      ctx.fill();
+      ctx.stroke();
+    });
+    if(hoverKey){
+      var hovered = shapes.filter(function(f){ return f.__key === hoverKey; })[0];
+      if(hovered){ ctx.beginPath(); path(hovered); ctx.strokeStyle = col.text; ctx.lineWidth = 1.3; ctx.stroke(); }
+    }
+
+    islands.forEach(function(p){
+      if(!facing(p.lonLat)) return;
+      var xy = projection(p.lonLat), status = getStatus(p.key);
+      ctx.beginPath(); ctx.arc(xy[0], xy[1], p.key === hoverKey ? 3.4 : 2.4, 0, 2 * Math.PI);
+      ctx.fillStyle = status ? col[status] : withAlpha(col.text, 0.35);
+      ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = col.bg; ctx.stroke();
+    });
+
+    // The journey: dashed great-circle arcs between first visits, in date order.
+    var stops = journeyStops();
+    if(stops.length > 1){
+      ctx.beginPath();
+      for(var i = 1; i < stops.length; i++) path({ type:'LineString', coordinates:[stops[i - 1], stops[i]] });
+      ctx.setLineDash([3, 4]);
+      ctx.lineWidth = 1.3;
+      ctx.strokeStyle = withAlpha(col.wishlist, 0.8);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      stops.forEach(function(s){
+        if(!facing(s)) return;
+        var xy = projection(s);
+        ctx.beginPath(); ctx.arc(xy[0], xy[1], 2.2, 0, 2 * Math.PI);
+        ctx.fillStyle = col.text; ctx.fill();
+      });
+      if(!still){
+        // A light flies along each leg in turn, easing in and out of every stop.
+        var legs = stops.length - 1, t = (now / 1700) % legs, k = Math.floor(t), u = t - k;
+        var eased = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+        var at = d3.geoInterpolate(stops[k], stops[k + 1])(eased);
+        if(facing(at)){
+          var p2 = projection(at);
+          var light = ctx.createRadialGradient(p2[0], p2[1], 0, p2[0], p2[1], 10);
+          light.addColorStop(0, withAlpha(col.wishlist, 1));
+          light.addColorStop(1, withAlpha(col.wishlist, 0));
+          ctx.fillStyle = light;
+          ctx.beginPath(); ctx.arc(p2[0], p2[1], 10, 0, 2 * Math.PI); ctx.fill();
+        }
+      }
+    }
+  }
+
+  /** One animation frame: turn a little (or coast after a drag), paint, and ask for the next frame while on screen. */
+  function frame(now){
+    rafId = null;
+    var dt = lastTime ? Math.min(50, now - lastTime) : 16;
+    lastTime = now;
+    if(!drag){
+      if(Math.abs(spin) > 0.02){ rot[0] += spin; spin *= 0.95; }
+      else if(!hovering && !still) rot[0] += dt * 0.008;        // about 8° a second
+    }
+    draw(now);
+    if(onScreen && !still) rafId = requestAnimationFrame(frame);
+  }
+
+  /** Schedules a frame unless one is already coming. */
+  function kick(){
+    if(rafId) return;
+    lastTime = 0;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  /**
+   * The place under the pointer, or null: island dots first (they are small
+   * targets), then the country containing the point under the cursor.
+   */
+  function placeAt(e){
+    var rect = canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    for(var i = 0; i < islands.length; i++){
+      var p = islands[i];
+      if(!facing(p.lonLat)) continue;
+      var xy = projection(p.lonLat);
+      if(Math.abs(xy[0] - x) < 7 && Math.abs(xy[1] - y) < 7) return p.key;
+    }
+    var lonLat = projection.invert([x, y]);
+    if(!lonLat || !isFinite(lonLat[0]) || !facing(lonLat)) return null;
+    for(var j = 0; j < shapes.length; j++){
+      if(d3.geoContains(shapes[j], lonLat)) return shapes[j].__key;
+    }
+    return null;
+  }
+
+  var tooltip = $('mapTooltip');
+  canvas.addEventListener('pointerdown', function(e){
+    drag = { x:e.clientX, y:e.clientY, lastX:e.clientX, rot:rot.slice(), moved:false };
+    spin = 0;
+    if(canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', function(e){
+    if(drag){
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if(Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+      var degPerPx = 180 / Math.PI / projection.scale();
+      rot[0] = drag.rot[0] + dx * degPerPx;
+      // Tilting needs vertical drags, which phones use to scroll the page: mouse only.
+      if(e.pointerType === 'mouse') rot[1] = Math.max(-70, Math.min(70, drag.rot[1] - dy * degPerPx));
+      if(!still) spin = (e.clientX - drag.lastX) * degPerPx;
+      drag.lastX = e.clientX;
+      tooltip.style.opacity = 0;
+      kick();
+      return;
+    }
+    if(e.pointerType !== 'mouse') return;
+    var key = placeAt(e);
+    if(key !== hoverKey){ hoverKey = key; kick(); }
+    canvas.style.cursor = key ? 'pointer' : '';
+    if(key){
+      var p = PLACE_BY_KEY[key], status = getStatus(key);
+      tooltip.textContent = p.label + (status ? ' · ' + status.toUpperCase() : '');
+      tooltip.style.opacity = 1;
+      tooltip.style.left = e.clientX + 'px';
+      tooltip.style.top = e.clientY + 'px';
+    } else {
+      tooltip.style.opacity = 0;
+    }
+  });
+  canvas.addEventListener('pointerup', function(e){
+    if(drag && !drag.moved){
+      var key = placeAt(e);
+      if(key){ tooltip.style.opacity = 0; openPanel(key); }
+    }
+    drag = null;
+    kick();
+  });
+  canvas.addEventListener('pointercancel', function(){ drag = null; spin = 0; });
+  canvas.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') hovering = true; });
+  canvas.addEventListener('pointerleave', function(){
+    hovering = false; hoverKey = null; tooltip.style.opacity = 0; kick();
+  });
+
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      onScreen = entries[0].isIntersecting;
+      if(onScreen) kick();
+    }).observe(canvas);
+  }
+  var resizeTimer = null;
+  window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 120); });
+  resize();
+  kick();
+  globe = { redraw:kick };
 }
 
 /* ============================================================================
@@ -1773,14 +2222,37 @@ function bindSurprise(){
     }
     var p = sample(pool, 1)[0];
     var onList = getStatus(p.key) === 'wishlist';
-    wrap.innerHTML = '<div class="surprise-card">' +
-      '<div class="flag">' + flagEmoji(p.iso2) + '</div>' +
-      '<h3 class="name">' + escapeHtml(p.label) + '</h3>' +
-      '<div class="tag">' + (onList ? 'ON YOUR WISHLIST' : 'UNSEEN') + ' · ' + CONTINENT_LABELS[p.continent].toUpperCase() + '</div>' +
-      '<p class="quip">' + escapeHtml(sample(QUIPS_UNSEEN, 1)[0]) + '</p>' +
-      '<div class="surprise-actions">' +
-        '<button class="btn btn-gold btn-sm" id="surpriseWishlist" type="button"' + (onList ? ' disabled' : '') + '>' + (onList ? 'On your wishlist' : 'Add to wishlist') + '</button>' +
-        '<button class="btn btn-primary btn-sm" id="surpriseExplore" type="button">Explore</button>' +
+    // The pick is printed as a boarding pass, flying from the closest place
+    // you've already been (when the map has loaded and there is one).
+    var from = null;
+    if(map && geo[p.key]){
+      var been = visitedPlaces().filter(function(v){ return geo[v.key]; });
+      if(been.length) from = nearestVisited(p, been);
+    }
+    var gate = CONTINENT_LABELS[p.continent].charAt(0) + (hashString(p.key) % 24 + 1);
+    wrap.innerHTML = '<div class="surprise-card boarding-pass">' +
+      '<div class="bp-main">' +
+        '<div class="bp-head"><span class="bp-brand">UNSEEN<b>.</b> AIR</span><span>Boarding pass</span></div>' +
+        '<div class="bp-route">' +
+          '<div class="bp-city"><small>From</small><b>' + (from ? escapeHtml(from.place.iso2 || '··') : 'YOU') + '</b><span>' + (from ? escapeHtml(from.place.label) : 'Wherever you are') + '</span></div>' +
+          '<div class="bp-path" aria-hidden="true"><i></i><span>✈</span><i></i></div>' +
+          '<div class="bp-city to"><small>To</small><b>' + escapeHtml(p.iso2 || '··') + '</b><h3 class="name">' + escapeHtml(p.label) + '</h3></div>' +
+        '</div>' +
+        '<div class="bp-meta">' +
+          '<div><small>Continent</small><span>' + CONTINENT_LABELS[p.continent] + '</span></div>' +
+          '<div><small>Distance</small><span>' + (from ? Math.round(from.km).toLocaleString('en-US') + ' km' : '—') + '</span></div>' +
+          '<div><small>Status</small><span>' + (onList ? 'Wishlist' : 'Unseen') + '</span></div>' +
+        '</div>' +
+        '<p class="quip">' + escapeHtml(sample(QUIPS_UNSEEN, 1)[0]) + '</p>' +
+        '<div class="surprise-actions">' +
+          '<button class="btn btn-gold btn-sm" id="surpriseWishlist" type="button"' + (onList ? ' disabled' : '') + '>' + (onList ? 'On your wishlist' : 'Add to wishlist') + '</button>' +
+          '<button class="btn btn-primary btn-sm" id="surpriseExplore" type="button">Explore</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bp-stub" aria-hidden="true">' +
+        '<span class="flag">' + flagEmoji(p.iso2) + '</span>' +
+        '<span class="bp-gate">Gate<b>' + gate + '</b></span>' +
+        '<span class="bp-barcode"></span>' +
       '</div></div>';
     $('surpriseWishlist').addEventListener('click', function(){
       setStatus(p.key, 'wishlist');
