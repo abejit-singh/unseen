@@ -1,0 +1,15 @@
+{
+  "id": "./",
+  "name": "UNSEEN — How much of the world is still waiting for you?",
+  "short_name": "UNSEEN",
+  "description": "An interactive map of everywhere you've been, and everywhere you haven't.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#070707",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
