@@ -8,7 +8,7 @@ No backend, no build step, no accounts. Everything runs client-side and saves to
 
 ## Live features
 
-- **A real geographic map.** Actual country borders (Natural Earth data via D3 and topojson), not a static image. Every country can be clicked, hovered, zoomed and panned.
+- **A real geographic map.** Actual country borders (Natural Earth data via D3 and topojson), not a static image, drawn on a shaded globe with a 10° grid of meridians and parallels. Every country can be clicked, hovered, zoomed and panned.
 - **All 195 countries.** The 193 UN members plus the two observer states. The 29 countries too small to have a shape at this scale (Malta, Singapore, San Marino, Vatican City and others) are drawn as dots at their real location. Dots that sit inside another country become clickable once you zoom in, so they never steal a tap meant for Italy or France.
 - **Territories, handled honestly.** Greenland, Puerto Rico, Antarctica and a few other areas appear on the map and can be marked, but they don't count toward the 195. The headline number means what it says.
 - **Three states per place.** Unseen, visited or wishlist. Each change spreads its new colour outward from the country's centre.
