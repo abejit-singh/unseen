@@ -8,8 +8,7 @@ No backend, no build step, no accounts. Everything runs client-side and saves to
 
 ## Live features
 
-- **A globe you can spin.** The opening screen shows the Earth as seen from space, with your visited and wishlist countries in colour. It turns by itself; drag it to spin it, and click any country to open it. Your first visits are joined in date order by arcs, with a small light travelling along them.
-- **A real geographic map.** Actual country borders (Natural Earth data via D3 and topojson), not a static image, drawn on a shaded globe with a 10° grid of meridians and parallels. Every country can be clicked, hovered, zoomed and panned.
+- **A real geographic map.** Actual country borders (Natural Earth data via D3 and topojson), not a static image. Every country can be clicked, hovered, zoomed and panned.
 - **All 195 countries.** The 193 UN members plus the two observer states. The 29 countries too small to have a shape at this scale (Malta, Singapore, San Marino, Vatican City and others) are drawn as dots at their real location. Dots that sit inside another country become clickable once you zoom in, so they never steal a tap meant for Italy or France.
 - **Territories, handled honestly.** Greenland, Puerto Rico, Antarctica and a few other areas appear on the map and can be marked, but they don't count toward the 195. The headline number means what it says.
 - **Three states per place.** Unseen, visited or wishlist. Each change spreads its new colour outward from the country's centre.
@@ -17,14 +16,13 @@ No backend, no build step, no accounts. Everything runs client-side and saves to
 - **Find a country.** A search field that also gives keyboard and screen-reader users a way to reach any country.
 - **Continent filters.** Dim and zoom the map to one continent, with live stats for how much of it you've explored.
 - **My World.** Totals for countries, continents and cities visited, your best-rated place, and a progress bar per continent.
-- **Your Memories.** The notes, ratings and photos you've attached to visited places, as postcards: the note handwritten on the back, a stamp with the country's flag and a postmark with the city and month.
-- **Travel Timeline.** Generated automatically from the dates you enter, as a page of passport stamps, one per first visit.
+- **Your Memories.** The notes, ratings and photos you've attached to visited places.
+- **Travel Timeline.** Generated automatically from the dates you enter.
 - **What's Next.** Suggestions based on real distances from the map data:
   - the closest unseen countries to anywhere you've been;
   - the most distant ones on continents you haven't visited yet;
   - your wishlist;
   - a random pick.
-- **Surprise me.** A random country you haven't seen, printed as a boarding pass from the closest place you've already been.
 - **World Score.** An internal index of your progress, clearly labelled as such.
 
 All numbers are computed live from what you enter. Nothing is hardcoded or simulated.
@@ -77,7 +75,6 @@ Vanilla HTML, CSS and JavaScript in a single, fully commented file. The map is b
 | `manifest.json` | App name, colours and icons for installation |
 | `service-worker.js` | Offline support (caches the app and the map files) |
 | `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` | App icons |
-| `og-image.png` | Preview image shown when the link is shared (1200 × 630) |
 
 ## Disclaimer
 
