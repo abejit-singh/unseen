@@ -36,8 +36,8 @@ All numbers are computed live from what you enter. Nothing is hardcoded or simul
 
 No installation required.
 
-1. Download `index.html`.
-2. Open it in any modern browser (double-click, or drag it into a browser window).
+1. Download the repository (on GitHub: **Code → Download ZIP**) and unzip it.
+2. Open `index.html` in any modern browser (double-click, or drag it into a browser window). `style.css` and `script.js` need to stay in the same folder.
 
 The first load needs an internet connection for the map (country shapes, D3 and topojson) and Google Fonts. Installed as an app (below), it keeps working offline after that.
 
@@ -67,11 +67,13 @@ UNSEEN collects nothing and sends nothing to any server it controls. There is no
 
 ## Tech
 
-Vanilla HTML, CSS and JavaScript in a single, fully commented file. The map is built with [D3.js](https://d3js.org) 7.9.0 and topojson-client 3.0.2, loaded from cdnjs.cloudflare.com. Country shapes come from [world-atlas](https://github.com/topojson/world-atlas) (Natural Earth 1:110m data, public domain). No frameworks and no build tools.
+Vanilla HTML, CSS and JavaScript in three plain, fully commented files. The map is built with [D3.js](https://d3js.org) 7.9.0 and topojson-client 3.0.2, loaded from cdnjs.cloudflare.com. Country shapes come from [world-atlas](https://github.com/topojson/world-atlas) (Natural Earth 1:110m data, public domain). No frameworks and no build tools.
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | The whole app: markup, styles and script |
+| `index.html` | The page: the markup of every section |
+| `style.css` | All the styles, organised by section, with a contents list at the top |
+| `script.js` | All the behaviour: state and saving, calculations, rendering, events |
 | `manifest.json` | App name, colours and icons for installation |
 | `service-worker.js` | Offline support (caches the app and the map files) |
 | `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` | App icons |
