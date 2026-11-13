@@ -3,8 +3,8 @@
   UNSEEN — How much of the world is still waiting for you?
   © 2026 Abejit. All rights reserved. See README.md.
 
-  The page itself: the markup of every section. Styles live in style.css,
-  behaviour in script.js; there is no build step.
+  The page itself: the markup of every section. Styles live in
+  css/style.css, behaviour in js/script.js; there is no build step.
   The only external pieces are two map libraries (D3 + topojson, from cdnjs),
   the world map data itself (world-atlas, from jsdelivr with unpkg as a
   fallback) and Google Fonts. No user data is ever sent anywhere.
@@ -31,9 +31,9 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UNSEEN — How much of the world is still waiting for you?">
 <meta name="twitter:description" content="An interactive map of everywhere you've been, and everywhere you haven't.">
-<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -50,7 +50,7 @@
 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -182,6 +182,6 @@
 <div class="map-tooltip" id="mapTooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>

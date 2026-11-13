@@ -37,7 +37,7 @@ All numbers are computed live from what you enter. Nothing is hardcoded or simul
 No installation required.
 
 1. Download the repository (on GitHub: **Code → Download ZIP**) and unzip it.
-2. Open `index.html` in any modern browser (double-click, or drag it into a browser window). `style.css` and `script.js` need to stay in the same folder.
+2. Open `index.html` in any modern browser (double-click, or drag it into a browser window). Keep the folders as they are (`css/`, `js/`, `icons/`).
 
 The first load needs an internet connection for the map (country shapes, D3 and topojson) and Google Fonts. Installed as an app (below), it keeps working offline after that.
 
@@ -72,11 +72,11 @@ Vanilla HTML, CSS and JavaScript in three plain, fully commented files. The map 
 | File | Purpose |
 | --- | --- |
 | `index.html` | The page: the markup of every section |
-| `style.css` | All the styles, organised by section, with a contents list at the top |
-| `script.js` | All the behaviour: state and saving, calculations, rendering, events |
+| `css/style.css` | All the styles, organised by section, with a contents list at the top |
+| `js/script.js` | All the behaviour: state and saving, calculations, rendering, events |
 | `manifest.json` | App name, colours and icons for installation |
 | `service-worker.js` | Offline support (caches the app and the map files) |
-| `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` | App icons |
+| `icons/` | App icons: `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` |
 
 ## Disclaimer
 

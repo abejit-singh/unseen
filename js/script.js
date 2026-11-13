@@ -3,7 +3,7 @@
  *
  * Architecture
  * ------------
- * - Three plain files: index.html (markup), style.css and this script.
+ * - Three plain files: index.html (markup), css/style.css and this script.
  *   No build step, no framework, no backend. D3 draws the map,
  *   topojson-client decodes the compact world-atlas file into shapes.
  * - All user data lives in one `state` object, saved to localStorage after
