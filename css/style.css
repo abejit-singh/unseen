@@ -1150,7 +1150,7 @@ h2 {
 }
 
 /* ============================= MEMORIES ============================= */
-/* A card for each visited place, with its cities, rating, note and photo. */
+/* A card for each visited place that has a note, a rating or a photo. */
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

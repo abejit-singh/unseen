@@ -727,15 +727,16 @@
 
   /** "My world" totals and the per-continent progress bars. */
   function renderMyWorld() {
+    // 1. Totals from the places you have been: countries, continents, cities, best rating.
     const visited = visitedPlaces();
     const countries = visitedCountries();
     const territories = visited.length - countries.length;
-    const continents = {};
+    const continents = new Set();
     let cities = 0;
     let best = null;
     visited.forEach((p) => {
       const c = state.countries[p.key];
-      continents[p.continent] = true;
+      continents.add(p.continent);
       cities += (c.cities || []).length;
       if (c.rating && (!best || c.rating > best.rating)) best = { place: p, rating: c.rating };
     });
@@ -748,6 +749,7 @@
         `<div class="lbl">${label}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`
       );
     }
+    // 2. The grid of totals.
     $('myWorldGrid').innerHTML =
       `${
         cell(
@@ -755,7 +757,7 @@
           'Countries visited',
           territories ? `+ ${plural(territories, 'territory', 'territories')}` : ''
         ) +
-        cell(Object.keys(continents).length, 'Continents visited') +
+        cell(continents.size, 'Continents visited') +
         cell(cities, 'Cities visited') +
         cell(wishlistPlaces().length, 'Wishlist')
       }` +
@@ -763,6 +765,7 @@
       `<div class="num small">${best ? `${placeTitle(best.place)} — ${best.rating}/10` : '—'}</div>` +
       `<div class="lbl">Best rated</div></div>`;
 
+    // 3. One progress bar per continent.
     const rows = CONTINENT_ORDER.map((c) => {
       const all = COUNTRIES.filter((p) => p.continent === c);
       const seen = all.filter((p) => getStatus(p.key) === 'visited').length;
@@ -784,19 +787,16 @@
         `<span class="frac">${frac}</span></div>`
       );
     });
+    // 4. Redraw the bars at their old widths, then grow them to the new ones on the next frame.
     const list = $('continentList');
-    // Keep the bars' current widths so they animate from old to new value.
-    const oldWidths = Array.prototype.map.call(
-      list.querySelectorAll('.continent-bar-fill'),
-      (f) => f.style.width
-    );
+    const oldWidths = [...list.querySelectorAll('.continent-bar-fill')].map((f) => f.style.width);
     list.innerHTML = rows.join('');
     const fills = list.querySelectorAll('.continent-bar-fill');
-    Array.prototype.forEach.call(fills, (f, i) => {
+    fills.forEach((f, i) => {
       f.style.width = oldWidths[i] || '0%';
     });
     requestAnimationFrame(() => {
-      Array.prototype.forEach.call(fills, (f) => {
+      fills.forEach((f) => {
         f.style.width = `${f.dataset.w}%`;
       });
     });
@@ -805,6 +805,7 @@
   /** Memory cards for visited places that have a memory, rating or photo — newest first. */
   function renderMemories() {
     const grid = $('memoryGrid');
+    // 1. Visited places with a note, a rating or a photo, most recent first.
     const items = visitedPlaces()
       .filter((p) => {
         const c = state.countries[p.key];
@@ -813,11 +814,13 @@
       .sort((a, b) =>
         (state.countries[b.key].firstVisited || '').localeCompare(state.countries[a.key].firstVisited || '')
       );
+    // 2. None yet: a placeholder.
     if (items.length === 0) {
       grid.innerHTML =
         '<p class="empty-state">No memories yet. Mark a country as visited and add a note to see it here.</p>';
       return;
     }
+    // 3. One card each: photo, name, cities and date, stars, note.
     grid.innerHTML = items
       .map((p) => {
         const c = state.countries[p.key];
@@ -1023,9 +1026,11 @@
     });
     const shapes = fc.features.filter((f) => f.__key);
 
+    // 1. Projection: Natural Earth, fitted to the map box.
     const projection = d3.geoNaturalEarth1().fitSize([MAP_W - 8, MAP_H - 8], fc);
     const path = d3.geoPath(projection);
 
+    // 2. The SVG takes the place of the loading message.
     const loading = $('mapLoading');
     if (loading) loading.remove();
     const svg = d3
@@ -1052,6 +1057,7 @@
     layer.append('path').datum({ type: 'Sphere' }).attr('class', 'sphere').attr('d', path);
     layer.append('path').datum(d3.geoGraticule10()).attr('class', 'graticule').attr('d', path);
 
+    // 3. One path per country, coloured by its state.
     layer
       .selectAll('path.place')
       .data(shapes)
@@ -1066,6 +1072,7 @@
         paintPlace(this);
       });
 
+    // 4. Countries too small for a shape: a dot at their real location.
     const micro = PLACES.filter((p) => p.lonLat);
     layer
       .selectAll('circle.place')
@@ -1087,6 +1094,7 @@
         paintPlace(this);
       });
 
+    // 5. Zoom and pan.
     const zoom = d3
       .zoom()
       .scaleExtent([1, 12])
@@ -1099,6 +1107,7 @@
       .on('zoom', onZoom);
     svg.call(zoom).on('dblclick.zoom', null); // double-click would zoom AND open the panel twice
 
+    // 6. Keep what the rest of the code needs, then add the controls and the pointer handlers.
     map = { svg, layer, zoom, path, projection, k: 1 };
 
     addMapChrome(container);
@@ -1389,11 +1398,13 @@
     const p = PLACE_BY_KEY[key];
     if (!p) return;
     opts = opts || {};
+    // 1. Remember where focus was, so closing the panel can give it back.
     if (!$('panel').classList.contains('open')) panelReturnFocus = document.activeElement;
     panelKey = key;
     const c = state.countries[key] || {};
     const status = c.status;
 
+    // 2. Header: close button, state, name, continent (and a note for territories).
     let html =
       `<div class="panel-inner">` +
       `<button class="panel-close" id="panelClose" type="button" aria-label="Close">×</button>` +
@@ -1404,6 +1415,7 @@
         ? ''
         : '<p class="panel-note">Tracked on your map, but not counted among the 195 countries.</p>');
 
+    // 3. The body depends on the state: details if visited, a short note for the wishlist, two buttons otherwise.
     if (status === 'visited') {
       const cities = c.cities || [];
       html +=
@@ -1457,6 +1469,7 @@
     }
     html += '</div>';
 
+    // 4. Show it without losing the scroll position, and move focus into it.
     const panel = $('panel');
     const scroll = panel.scrollTop;
     panel.innerHTML = html;
@@ -1518,6 +1531,7 @@
   function bindPanel() {
     const panel = $('panel');
 
+    // Buttons, by id: close, change the state, add a city, remove the photo or a city.
     panel.addEventListener('click', (e) => {
       const t = e.target.closest('button');
       if (!t || !panelKey) return;
@@ -1566,6 +1580,7 @@
       }
     });
 
+    // Enter in the city field adds the city.
     panel.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && e.target.id === 'fCityInput') {
         e.preventDefault();
@@ -1698,7 +1713,7 @@
       const btn = e.target.closest('.pill');
       if (!btn) return;
       activeContinent = btn.dataset.c;
-      Array.prototype.forEach.call(this.querySelectorAll('.pill'), (p) => {
+      this.querySelectorAll('.pill').forEach((p) => {
         p.setAttribute('aria-pressed', String(p === btn));
       });
       applyContinentFilter();
@@ -1866,6 +1881,7 @@
    * @returns {{items?:object[], empty?:string}}
    */
   function suggestions(mode) {
+    // 1. Wishlist and random need no geography.
     if (mode === 'wishlist') {
       const w = wishlistPlaces();
       return w.length
@@ -1882,31 +1898,32 @@
         ? { items: [{ place: sample(unseen, 1)[0] }] }
         : { empty: 'You’ve been everywhere.' };
     }
+    // 2. The other modes measure distances: they need the map and at least one visited country.
     if (!map) return { empty: 'The map is still loading — try again in a moment.' };
     const visited = visitedPlaces().filter((p) => geo[p.key]);
     if (visited.length === 0)
       return { empty: 'Mark a country as visited first, so there’s somewhere to measure from.' };
+    // 3. For every unseen country, the distance to the nearest place you have been.
     const scored = unseen
       .filter((p) => geo[p.key])
       .map((p) => {
         const n = nearestVisited(p, visited);
         return { place: p, km: n.km, from: n.place };
       });
+    // 4. Closest: the three nearest.
     if (mode === 'closest') {
       return { items: scored.sort((a, b) => a.km - b.km).slice(0, 3) };
     }
-    const touched = {};
-    visited.forEach((p) => {
-      touched[p.continent] = true;
-    });
-    const fresh = scored.filter((s) => !touched[s.place.continent]);
+    // 5. Farthest: one per continent you have not been to yet if possible, otherwise just the farthest.
+    const touched = new Set(visited.map((p) => p.continent));
+    const fresh = scored.filter((s) => !touched.has(s.place.continent));
     const farthest = (list) => list.sort((a, b) => b.km - a.km);
     if (fresh.length) {
       const perContinent = {};
       farthest(fresh).forEach((s) => {
         if (!perContinent[s.place.continent]) perContinent[s.place.continent] = s;
       });
-      return { items: farthest(Object.keys(perContinent).map((k) => perContinent[k])).slice(0, 3) };
+      return { items: farthest(Object.values(perContinent)).slice(0, 3) };
     }
     return { items: farthest(scored).slice(0, 3) };
   }
@@ -1915,9 +1932,9 @@
   function bindNext() {
     const wrap = $('nextResults');
     const buttons = document.querySelectorAll('.next-buttons button');
-    Array.prototype.forEach.call(buttons, (btn) => {
+    buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        Array.prototype.forEach.call(buttons, (b) => {
+        buttons.forEach((b) => {
           b.setAttribute('aria-pressed', String(b === btn));
         });
         const res = suggestions(btn.dataset.mode);
@@ -1965,7 +1982,7 @@
   function setupReveal() {
     const els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window)) {
-      Array.prototype.forEach.call(els, (el) => {
+      els.forEach((el) => {
         el.classList.add('is-visible');
       });
       return;
@@ -1981,7 +1998,7 @@
       },
       { threshold: 0.08 }
     );
-    Array.prototype.forEach.call(els, (el) => {
+    els.forEach((el) => {
       obs.observe(el);
     });
   }
