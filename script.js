@@ -653,7 +653,7 @@
     function tick(ts) {
       if (start === null) start = ts;
       const p = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      const eased = 1 - (1 - p) ** 3; // ease-out cubic
       el.textContent = format(from + (target - from) * eased);
       if (p < 1 && el._value === target) requestAnimationFrame(tick);
     }
@@ -1352,7 +1352,7 @@
     function tick(ts) {
       if (start === null) start = ts;
       const p = Math.min((ts - start) / duration, 1);
-      circle.setAttribute('r', maxR * (1 - Math.pow(1 - p, 3)));
+      circle.setAttribute('r', maxR * (1 - (1 - p) ** 3));
       if (p < 1) {
         requestAnimationFrame(tick);
         return;

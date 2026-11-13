@@ -20,7 +20,6 @@
   --text-dim: rgba(237, 242, 241, 0.62);
   --text-dimmer: rgba(237, 242, 241, 0.4);
   --primary: #0e8299; /* ocean teal: visited countries, primary actions */
-  --primary-hover: #0b6b7d;
   --primary-soft: rgba(14, 130, 153, 0.16);
   --secondary: #4fb8cc;
   --ocean: #0a0f0e; /* map background */
@@ -31,7 +30,6 @@
   --wishlist-soft: rgba(214, 154, 58, 0.16);
   --on-accent: #0b1214; /* dark text for gold/teal surfaces (readable contrast) */
   --border: rgba(237, 242, 241, 0.12);
-  --overlay: #000000;
   --red: #ff7a66;
   --primary-hi: #17a3bc; /* top of the teal gradient */
   --primary-lo: #0a6878; /* bottom of the teal gradient */
@@ -237,7 +235,6 @@ h2 {
 .lede {
   color: var(--text-dim);
   max-width: 56ch;
-  font-size: 1rem;
   margin-bottom: 1.75rem;
 }
 .empty-state {
@@ -250,7 +247,6 @@ h2 {
 /* Buttons: .btn-primary is teal (visited), .btn-gold is for the wishlist,
    .btn-ghost is the quiet one, .btn-sm a smaller size. */
 .btn {
-  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 0.92rem;
   padding: 0.85rem 1.5rem;
@@ -394,7 +390,6 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
   transition: all 0.3s;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
@@ -602,7 +597,6 @@ h2 {
   margin-bottom: 0.9rem;
 }
 .pill {
-  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 0.72rem;
   letter-spacing: 0.01em;
@@ -668,7 +662,6 @@ h2 {
 .sphere {
   fill: url(#oceanGrad);
   stroke: rgba(79, 184, 204, 0.22);
-  stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 .ocean-stop-a {
@@ -781,9 +774,7 @@ h2 {
   border-radius: 9px;
   border: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(30, 40, 40, 0.75), rgba(8, 12, 12, 0.75));
-  color: var(--text);
   cursor: pointer;
-  font-size: 1rem;
   line-height: 1;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
