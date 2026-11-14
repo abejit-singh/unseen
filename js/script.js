@@ -4,8 +4,9 @@
  * Architecture
  * ------------
  * - Three plain files: index.html (markup), css/style.css and this script.
- *   No build step, no framework, no backend. D3 draws the map,
- *   topojson-client decodes the compact world-atlas file into shapes.
+ *   No build step, no framework, no backend. D3 draws the map and
+ *   topojson-client decodes the compact world-atlas file into shapes; both,
+ *   and the data, are kept with the site (js/vendor, data).
  * - All user data lives in one `state` object, saved to localStorage after
  *   every change. Render functions only ever READ from `state` and rebuild
  *   their part of the page; nothing keeps a second copy of the data, so the
@@ -214,11 +215,8 @@
     'Lao PDR': 'Laos'
   };
 
-  /** Where to download the world shapes from: tried in order, so one CDN outage doesn't break the map. */
-  const WORLD_ATLAS_URLS = [
-    'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
-    'https://unpkg.com/world-atlas@2/countries-110m.json'
-  ];
+  /** The world shapes: world-atlas 2.0.2 (Natural Earth, 1:110m), kept with the site. */
+  const WORLD_ATLAS_URL = 'data/countries-110m.json';
 
   const QUIPS_UNSEEN = [
     'Maybe this is your next destination.',
@@ -829,20 +827,12 @@
       showMapError('The map library couldn’t load. Check your connection, then retry.');
       return;
     }
-    loadWorldData(0);
+    loadWorldData();
   }
 
-  /**
-   * Downloads the world-atlas file, trying each URL in WORLD_ATLAS_URLS in
-   * turn. On success the shapes are decoded and the map is built.
-   * @param {number} i - index of the URL to try
-   */
-  function loadWorldData(i) {
-    if (i >= WORLD_ATLAS_URLS.length) {
-      showMapError('The world map data couldn’t be reached. Check your internet connection, then retry.');
-      return;
-    }
-    fetch(WORLD_ATLAS_URLS[i])
+  /** Downloads the world shapes, decodes them and builds the map. */
+  function loadWorldData() {
+    fetch(WORLD_ATLAS_URL)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
@@ -851,7 +841,7 @@
         buildMap(topojson.feature(topology, topology.objects.countries));
       })
       .catch(() => {
-        loadWorldData(i + 1);
+        showMapError('The world map data couldn’t be loaded. Check your connection, then retry.');
       });
   }
 

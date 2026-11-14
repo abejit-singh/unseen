@@ -5,22 +5,22 @@
 
   The page itself: the markup of every section. Styles live in
   css/style.css, behaviour in js/script.js; there is no build step.
-  The only external pieces are two map libraries (D3 + topojson, from cdnjs),
-  the world map data itself (world-atlas, from jsdelivr with unpkg as a
-  fallback) and Google Fonts. No user data is ever sent anywhere.
+  Everything is served from this site, the map libraries, the world map
+  data and the fonts included. No user data is ever sent anywhere.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!--
-  Content Security Policy: a whitelist of where this page may load anything
-  from. Even though the app has no server, this limits the damage any
-  injected markup could do — scripts may only come from this site or cdnjs,
-  network requests only go to the two map-data CDNs, and images can only be
-  local files or the data: URLs used for photos the user adds.
+  Content Security Policy: everything the page loads (scripts, styles, fonts,
+  data) must come from this site, and it can make no request anywhere else.
+  With no server this is defence in depth: even injected markup couldn't load
+  outside code or send data away. Inline styles are allowed because the
+  script sets style attributes on the elements it draws; images may also be
+  data: or blob: URLs (the grain texture and the photos you add).
 -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="dark only">
 <meta name="theme-color" content="#070707">
 <title>UNSEEN — How much of the world is still waiting for you?</title>
@@ -38,18 +38,20 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UNSEEN">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- The fonts the first screen needs, fetched early so the text appears in its final typeface. -->
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!--
-  Map libraries, pinned to exact versions so a future release can never
-  change behaviour underneath the app. Loaded synchronously (no async/defer)
-  because the app script at the bottom needs them; if either fails to load,
-  the app still runs and shows a clear "map unavailable" message with a
-  Retry button instead of breaking.
+  Map libraries (D3 and topojson-client), kept in js/vendor at fixed versions
+  so a new release can never change behaviour underneath the app. `defer`
+  loads them without blocking the page; they still run, in order, before the
+  app's own script. If either fails to load, the app still runs and shows a
+  clear "map unavailable" message with a Retry button.
 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" crossorigin="anonymous"></script>
+<script defer src="js/vendor/d3.min.js"></script>
+<script defer src="js/vendor/topojson-client.min.js"></script>
+<link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -182,6 +184,6 @@
 <div class="map-tooltip" id="mapTooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/script.js"></script>
+<script defer src="js/script.js"></script>
 </body>
 </html>
