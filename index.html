@@ -4,7 +4,8 @@
   © 2026 Abejit. All rights reserved. See README.md.
 
   The page itself: the markup of every section. Styles live in
-  css/style.css, behaviour in js/script.js; there is no build step.
+  css/style.css, behaviour in the modules under js/ (start-up: js/main.js);
+  there is no build step.
   Everything is served from this site, the map libraries, the world map
   data and the fonts included. No user data is ever sent anywhere.
 -->
@@ -184,6 +185,6 @@
 <div class="map-tooltip" id="mapTooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script defer src="js/script.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
