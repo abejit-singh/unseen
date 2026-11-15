@@ -2,6 +2,8 @@
 
 **How much of the world is still waiting for you?**
 
+[![CI](https://github.com/abejit-singh/unseen/actions/workflows/ci.yml/badge.svg)](https://github.com/abejit-singh/unseen/actions/workflows/ci.yml)
+
 **Live:** [abejit-singh.github.io/unseen](https://abejit-singh.github.io/unseen/)
 
 UNSEEN is an interactive world map for tracking where you've been. It is not a checklist: the map fills in as you mark countries visited, and every place keeps its own record of dates, cities, a rating, a memory and a photo.
@@ -64,6 +66,8 @@ The page is made of ES modules, which browsers only load from a server: opening 
 | `npm test`          | Both kinds of test                                        |
 
 The browser tests use [Playwright](https://playwright.dev), which needs its browser once: `npx playwright install chromium`.
+
+The same checks run on GitHub Actions at every push (`.github/workflows/ci.yml`).
 
 ## Project structure
 
