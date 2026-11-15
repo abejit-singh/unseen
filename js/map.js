@@ -158,6 +158,7 @@ function buildMap(fc) {
 
   // 4. Countries too small for a shape: a dot at their real location.
   const micro = PLACES.filter((p) => p.lonLat);
+  const boxes = shapes.map((f) => path.bounds(f)); // each country's box on the map, for a quick first check
   layer
     .selectAll('circle.place')
     .data(micro)
@@ -173,8 +174,14 @@ function buildMap(fc) {
       // Enclaves (San Marino, Vatican City, Monaco…) sit on top of a bigger
       // country. At full view their dot would steal taps meant for Italy or
       // France, so they only become clickable once the user zooms in.
+      // The exact test (geoContains) is slow, so it only runs for the countries whose box holds the dot.
       const lonLat = p.lonLat;
-      if (shapes.some((f) => d3.geoContains(f, lonLat))) this.classList.add('enclave', 'locked');
+      const [x, y] = projection(lonLat);
+      const inside = shapes.some((f, i) => {
+        const [[x0, y0], [x1, y1]] = boxes[i];
+        return x >= x0 - 1 && x <= x1 + 1 && y >= y0 - 1 && y <= y1 + 1 && d3.geoContains(f, lonLat);
+      });
+      if (inside) this.classList.add('enclave', 'locked');
       paintPlace(this);
     });
 
