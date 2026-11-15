@@ -2,11 +2,18 @@
 
 **How much of the world is still waiting for you?**
 
+**Live:** [abejit-singh.github.io/unseen](https://abejit-singh.github.io/unseen/)
+
 UNSEEN is an interactive world map for tracking where you've been. It is not a checklist: the map fills in as you mark countries visited, and every place keeps its own record of dates, cities, a rating, a memory and a photo.
 
-No backend, no build step, no accounts. Everything runs client-side and saves to your browser's `localStorage`.
+No backend, no framework, no build step. Everything runs in the browser and is saved in its `localStorage`.
 
-## Live features
+<p>
+  <img src="docs/screenshot-desktop.jpg" alt="The world map with visited countries in teal and the wishlist in gold, above the headline figures" width="72%">
+  <img src="docs/screenshot-phone.jpg" alt="The map and the headline figures on a phone" width="24%">
+</p>
+
+## Features
 
 - **A real geographic map.** Actual country borders (Natural Earth data via D3 and topojson), not a static image. Every country can be clicked, hovered, zoomed and panned.
 - **All 195 countries.** The 193 UN members plus the two observer states. The 29 countries too small to have a shape at this scale (Malta, Singapore, San Marino, Vatican City and others) are drawn as dots at their real location. Dots that sit inside another country become clickable once you zoom in, so they never steal a tap meant for Italy or France.
@@ -34,50 +41,100 @@ All numbers are computed live from what you enter. Nothing is hardcoded or simul
 
 ## Running it locally
 
-No installation required.
+You need [Node.js](https://nodejs.org) 22 or later.
 
-1. Download the repository (on GitHub: **Code → Download ZIP**) and unzip it.
-2. Open `index.html` in any modern browser (double-click, or drag it into a browser window). Keep the folders as they are (`css/`, `js/`, `icons/`).
+```sh
+npm install
+npm start
+```
 
-The first load needs an internet connection for the map (country shapes, D3 and topojson) and Google Fonts. Installed as an app (below), it keeps working offline after that.
+Then open <http://127.0.0.1:5173>.
+
+The page is made of ES modules, which browsers only load from a server: opening `index.html` with a double-click shows an empty page. `npm start` runs a small static server; any other one works too.
+
+## Scripts
+
+| Command             | What it does                                              |
+| ------------------- | --------------------------------------------------------- |
+| `npm start`         | Serves the site at `http://127.0.0.1:5173`                |
+| `npm run lint`      | ESLint, Stylelint and a Prettier formatting check         |
+| `npm run format`    | Formats every file with Prettier                          |
+| `npm run test:unit` | Unit tests of the calculations and the saved data         |
+| `npm run test:e2e`  | The page in a real browser, at a desktop and a phone size |
+| `npm test`          | Both kinds of test                                        |
+
+The browser tests use [Playwright](https://playwright.dev), which needs its browser once: `npx playwright install chromium`.
+
+## Project structure
+
+```
+index.html            the page: the markup of every section
+css/
+  fonts.css           the typefaces the site serves itself
+  style.css           every style, by section, with a contents list at the top
+js/
+  main.js             entry point: starts the app
+  config.js           data tables: continents, countries, territories, small states
+  utils.js            small helpers: text, dates, flags, distances
+  places.js           one list of everything that can be marked
+  state.js            the saved data: loading, checking, saving
+  effects.js          motion: counting numbers, the toast, pointer effects
+  sections.js         figures, My World, memories, timeline and score
+  map.js              the map: drawing, zoom and pan, continent filters
+  panel.js            a country's panel: visit, cities, rating, memory, photo
+  explore.js          search, filters, the surprise card and What's Next
+  vendor/             D3 and topojson-client, unmodified
+data/                 the shapes of the countries (world-atlas, 110m)
+fonts/                the typefaces (woff2) and their licences
+icons/                the app icons
+images/               the preview shown when the link is shared
+docs/                 the screenshots on this page
+tests/
+  unit/               the calculations and the saved data, run in Node
+  e2e/                the page in a real browser (Playwright)
+manifest.json         app name, colours and icons for installation
+service-worker.js     offline support
+```
+
+## How it is built
+
+- **No framework and no build step.** Plain HTML, CSS and JavaScript. The files in this repository are the files the browser runs, and GitHub Pages serves the `main` branch as it is.
+- **ES modules.** One module for each part of the page, loaded by the browser from `js/main.js`. The foundation (`config.js` → `utils.js` → `places.js` → `state.js`) imports nothing from the modules built on top of it.
+- **One state object.** Everything the user enters lives in one object, saved to `localStorage` after every change. When it is read back every field is checked, so damaged or hand-edited data cannot break the page.
+- **Rendering.** Each section has a function that rebuilds its markup from the state. Text typed by the user is escaped before it is inserted.
+- **The map.** Drawn with [D3](https://d3js.org) in the Natural Earth projection, from the 110m shapes of [world-atlas](https://github.com/topojson/world-atlas). The 29 countries too small to have a shape at that scale are drawn as dots at their real coordinates; the ones inside a bigger country (San Marino, Monaco…) only become clickable after zooming in, so they don't steal taps meant for Italy or France.
+- **The rest of the page doesn't wait for the map.** Figures, memories, timeline and score need no geography, so they are rendered before the world shapes have loaded.
+- **Photos stay small.** A photo is resized on the device to a small JPEG before it is saved, so it fits in `localStorage`.
+- **Nothing comes from another site.** The typefaces (Inter, Space Grotesk and JetBrains Mono), the map libraries and the world shapes are served from this repository, and a Content Security Policy (`default-src 'self'`) makes the browser refuse anything else.
+- **Offline.** A service worker keeps a copy of the app. Online, the page is always fetched fresh, so an update shows immediately; the copy is only used when there is no connection.
+- **Motion is optional.** Animations are switched off for people who ask their system for reduced motion.
+
+## Quality
+
+- **Tests.** Unit tests for the calculations and for the data read back from storage; browser tests that use the page the way a visitor does, including reopening it with no connection and checking that it calls no other site.
+- **Accessibility.** Labelled controls, keyboard access and text contrast that meets WCAG AA, checked with axe on the empty page and with data. The map is a picture to a screen reader: the search field does everything a click on the map does.
+- **Lighthouse** (phone profile, on a local copy served the way GitHub Pages serves it, November 2026): Performance about 90 (drawing the world map is the heavy part) · Accessibility 100 · Best Practices 100 · SEO 100.
 
 ## Installing as an app (PWA)
 
-UNSEEN is a Progressive Web App. Once it's hosted over HTTPS (for example on GitHub Pages), you can install it like a native app, with its own icon. After the first visit it works fully offline, map included.
+UNSEEN is a Progressive Web App: on the live site you can install it like a native app, with its own icon, and it keeps working offline.
 
 - **On mobile:** open the site, then use your browser's "Add to Home Screen" option (Safari: Share → Add to Home Screen; Chrome: menu → Install app).
 - **On desktop:** Chrome and Edge show an install icon in the address bar.
 
-The install prompt and offline caching only activate when the site is served over HTTPS. Opening `index.html` directly from disk (`file://`) works for everything except installability and offline mode, because browsers require a secure context for service workers.
-
 ## Privacy
 
-UNSEEN collects nothing and sends nothing to any server it controls. There is no backend at all.
+UNSEEN collects nothing and sends nothing anywhere. There is no backend at all.
 
 - **What's stored:** the places you mark, your wishlist, and the visit dates, cities, ratings, memories, trip counts and photos you add. It is saved only in your browser's `localStorage`, under the key `unseen_state_v1`. Photos are resized on your device to a small JPEG before being stored.
 - **Where it goes:** nowhere. None of your data ever leaves your device. There's no analytics, tracking, cookies or logging of any kind.
-- **The outside requests that do happen:** the page downloads public, static files it needs to work:
-  - the D3 and topojson libraries (cdnjs.cloudflare.com);
-  - the world map data (cdn.jsdelivr.net, with unpkg.com as a fallback);
-  - the typefaces (Google Fonts).
-
-  Like any file download on any website, these requests expose your IP address and browser type to those providers as a normal side effect. UNSEEN itself never sends them, or anyone, any of your data.
-
-- **Security:** a Content Security Policy restricts the page to loading code and data only from the sources above. All text you enter is escaped before it is displayed, and saved data is validated every time it loads.
+- **Outside requests:** none. The page, its fonts, the map libraries and the map data all come from this site, and the Content Security Policy blocks any other connection.
+- **Security:** all text you enter is escaped before it is displayed, and saved data is validated every time it is read.
 - **Clearing your data:** use the reset button (top-right of the site) at any time.
 
-## Tech
+## Third-party files
 
-Vanilla HTML, CSS and JavaScript in three plain, fully commented files. The map is built with [D3.js](https://d3js.org) 7.9.0 and topojson-client 3.0.2, loaded from cdnjs.cloudflare.com. Country shapes come from [world-atlas](https://github.com/topojson/world-atlas) (Natural Earth 1:110m data, public domain). No frameworks and no build tools.
-
-| File                | Purpose                                                                             |
-| ------------------- | ----------------------------------------------------------------------------------- |
-| `index.html`        | The page: the markup of every section                                               |
-| `css/style.css`     | All the styles, organised by section, with a contents list at the top               |
-| `js/script.js`      | All the behaviour: state and saving, calculations, rendering, events                |
-| `manifest.json`     | App name, colours and icons for installation                                        |
-| `service-worker.js` | Offline support (caches the app and the map files)                                  |
-| `icons/`            | App icons: `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` |
+Fonts: see [`fonts/README.md`](fonts/README.md) (SIL Open Font License). Map libraries and data: see [`js/vendor/README.md`](js/vendor/README.md) (ISC; Natural Earth data is in the public domain).
 
 ## Disclaimer
 
