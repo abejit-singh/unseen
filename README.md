@@ -62,6 +62,7 @@ UNSEEN collects nothing and sends nothing to any server it controls. There is no
   - the typefaces (Google Fonts).
 
   Like any file download on any website, these requests expose your IP address and browser type to those providers as a normal side effect. UNSEEN itself never sends them, or anyone, any of your data.
+
 - **Security:** a Content Security Policy restricts the page to loading code and data only from the sources above. All text you enter is escaped before it is displayed, and saved data is validated every time it loads.
 - **Clearing your data:** use the reset button (top-right of the site) at any time.
 
@@ -69,14 +70,14 @@ UNSEEN collects nothing and sends nothing to any server it controls. There is no
 
 Vanilla HTML, CSS and JavaScript in three plain, fully commented files. The map is built with [D3.js](https://d3js.org) 7.9.0 and topojson-client 3.0.2, loaded from cdnjs.cloudflare.com. Country shapes come from [world-atlas](https://github.com/topojson/world-atlas) (Natural Earth 1:110m data, public domain). No frameworks and no build tools.
 
-| File | Purpose |
-| --- | --- |
-| `index.html` | The page: the markup of every section |
-| `css/style.css` | All the styles, organised by section, with a contents list at the top |
-| `js/script.js` | All the behaviour: state and saving, calculations, rendering, events |
-| `manifest.json` | App name, colours and icons for installation |
-| `service-worker.js` | Offline support (caches the app and the map files) |
-| `icons/` | App icons: `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` |
+| File                | Purpose                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `index.html`        | The page: the markup of every section                                               |
+| `css/style.css`     | All the styles, organised by section, with a contents list at the top               |
+| `js/script.js`      | All the behaviour: state and saving, calculations, rendering, events                |
+| `manifest.json`     | App name, colours and icons for installation                                        |
+| `service-worker.js` | Offline support (caches the app and the map files)                                  |
+| `icons/`            | App icons: `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32.png` |
 
 ## Disclaimer
 

@@ -65,7 +65,7 @@ function loadState() {
       const clean = PLACE_BY_KEY[key] && sanitizeEntry(saved[name]);
       if (clean) fresh.countries[key] = clean;
     });
-  } catch (e) {
+  } catch {
     /* unreadable data: start fresh rather than crash */
   }
   return fresh;
@@ -82,7 +82,7 @@ export function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

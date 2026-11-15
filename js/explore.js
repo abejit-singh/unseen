@@ -247,7 +247,7 @@ export function bindReset() {
     if (!confirm('Erase all your UNSEEN data? This can’t be undone.')) return;
     try {
       localStorage.removeItem(STORAGE_KEY);
-    } catch (e) {
+    } catch {
       /* storage unavailable: nothing to erase */
     }
     location.reload();
